@@ -1,15 +1,15 @@
 
 -- Query 1: Sales Order Shipments by Month and Category Code1
 
-SELECT calMonth, addrCatCodeID, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
-FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, ADDR_CAT_CODE1 a
+SELECT calMonth, addrCatCode1, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
+FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, CUST_VENDOR_DIM cv
 WHERE if.dateKey = dd.dateKey
+	AND if.custVendorKey = cv.custVendorKey
     AND if.transTypeKey = t.transTypeKey
-    AND if.custVendorKey = a.addrCatCodeKey
     AND t.transTypeKey = 5
     AND dd.calYear = 2011
-GROUP BY CUBE (dd.calMonth, a.addrCatCodeID)
-ORDER BY dd.calMonth, a.addrCatCodeID;
+GROUP BY CUBE (calMonth, addrCatCode1)
+ORDER BY calMonth, addrCatCode1;
 
 
 -- Query 2: Sales Order Shipments by Name, Zip, and Quarter
@@ -61,41 +61,43 @@ ORDER BY calYear, calQuarter, name;
 
 -- Query 6: Rewrite Query 1 without CUBE, ROLLUP, or GROUPING SETS
 
-SELECT calMonth, addrCatCodeID, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
-FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, ADDR_CAT_CODE1 a
+SELECT calMonth, addrCatCode1, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
+FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, CUST_VENDOR_DIM cv
 WHERE if.dateKey = dd.dateKey
+	AND if.custVendorKey = cv.custVendorKey
     AND if.transTypeKey = t.transTypeKey
-    AND if.custVendorKey = a.addrCatCodeKey
     AND t.transTypeKey = 5
     AND dd.calYear = 2011
-GROUP BY dd.calMonth, a.addrCatCodeID
+GROUP BY calMonth, addrCatCode1
 UNION
 SELECT calMonth, NULL, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
-FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, ADDR_CAT_CODE1 a
+FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, CUST_VENDOR_DIM cv
 WHERE if.dateKey = dd.dateKey
+	AND if.custVendorKey = cv.custVendorKey
     AND if.transTypeKey = t.transTypeKey
-    AND if.custVendorKey = a.addrCatCodeKey
     AND t.transTypeKey = 5
     AND dd.calYear = 2011
 GROUP BY calMonth
 UNION
-SELECT NULL, addrCatCodeID, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
-FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, ADDR_CAT_CODE1 a
+SELECT NULL, addrCatCode1, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
+FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, CUST_VENDOR_DIM cv
 WHERE if.dateKey = dd.dateKey
+	AND if.custVendorKey = cv.custVendorKey
     AND if.transTypeKey = t.transTypeKey
-    AND if.custVendorKey = a.addrCatCodeKey
     AND t.transTypeKey = 5
     AND dd.calYear = 2011
-GROUP BY addrCatCodeID
+GROUP BY addrCatCode1
 UNION
 SELECT NULL, NULL, SUM(extCost) AS totalExtendedCost, SUM(quantity) AS totalQuantity
-FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, ADDR_CAT_CODE1 a
+FROM INVENTORY_FACT if, DATE_DIM dd, TRANS_TYPE_DIM t, CUST_VENDOR_DIM cv
 WHERE if.dateKey = dd.dateKey
+	AND if.custVendorKey = cv.custVendorKey
     AND if.transTypeKey = t.transTypeKey
-    AND if.custVendorKey = a.addrCatCodeKey
     AND t.transTypeKey = 5
     AND dd.calYear = 2011
-ORDER BY calMonth, addrCatCodeID;
+ORDER BY calMonth, addrCatCode1;
+
+
 
 
 -- Query 7: Rewrite Query 3 without CUBE, ROLLUP, or GROUPING SETS
